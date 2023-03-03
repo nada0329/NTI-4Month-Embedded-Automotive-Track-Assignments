@@ -1,0 +1,54 @@
+/*
+ * GccApplication1.c
+ *
+ * Created: 3/3/2023 9:36:09 AM
+ * Author : Nada
+ */ 
+
+#include "type.h"
+#include "bit.h"
+#include "DIO.h"
+#include "GlobalINT.h"
+#include "LED.h"
+#include "Button.h"
+#include "LCD_config.h"
+#include "LCD_private.h"
+#include "LCD_int.h"
+//#define F_CPU 8000000UL
+//#include <util/delay.h>
+#include "uart_reg.h"
+#include "uart.h"
+
+u8 func_trn(void);
+u8 tran_arr[15]={'a' ,'N' ,'b', 'c', 'd','e','f','g','Q','Y', '7', 'G', '8','0','J'};
+
+int main(void)
+{
+	LCD_voidInit();
+	LCD_voidClearDisplay();
+	UART_Init(UART_BAUDRATE_9600);
+	UART_UDRE_SetCallBack_(func_trn);
+	UART_UDRINT_Enable();
+	
+	GlobalINT_Enable();
+	
+	while(1)
+	{
+		LCD_WritingPosition(1,2);
+		LCD_voidWriteString("hello UART");
+	}
+		
+}
+
+u8 func_trn(void)
+{
+	static u8 j=0;
+	u8 val=tran_arr[j];
+	j++;
+	if(j==15)
+	{
+		//UART_UDRINT_Disable();
+		j=0;
+	}
+	return val;
+}
